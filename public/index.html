@@ -1,0 +1,114 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Socket.IO chat</title>
+        <style>
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            body { font: 13px Helvetica, Arial; }
+            #chatform { background: #000; padding: 3px; position: fixed; bottom: 0; width: 51%;}
+            #m { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
+            #chatbutton { width: 9%; background: rgb(130, 224, 255); border: none ; padding: 10px; }
+            #chatWrap{
+                width: 700px ;
+                margin: 0 auto;
+                border: 1px #000 solid;
+            }
+            #nickWrap{
+                width: 300px;
+                height: 100px;
+                position: absolute;
+                top:0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                margin: auto;
+            }
+            #contentWrap{
+                display: none;
+            }
+            #users{
+                padding-top: 0px;
+                padding-left: 1px;
+                background: white;
+                position: fixed;
+                top: 0em;
+                left: 85.5em;
+            }
+            #logout{
+                position: fixed;
+                bottom: 5em;
+                left: 85.5em;
+                padding: 15px 32px;
+            }
+            #messages { list-style-type: none; margin: 0; padding: 0;  }
+            #messages li { padding: 5px 10px; }
+            #messages li:nth-child(odd) { background: #eee; }
+        </style>
+    </head>
+    <body>
+        <div id="nickWrap">
+            <p>Insira um username</p>
+            <p id="nickError"></p>
+            <form id="setNick">
+                <input size=35 id="nickname"></input>
+                <input type="submit"></input>
+            </form>
+        </div>
+        <div id="contentWrap">
+            <div id="chatWrap">
+                <ul id="messages"></ul>
+                <form action="" id="chatform">
+                    <input id="m" autocomplete="off"><button id="chatbutton">Send</button>
+                </form>
+            </div>
+            <div id="users"></div>
+            <div id="logout"><button onclick="Logout();">Logout</button></div>
+        </div>
+        <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+        <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+        <script>
+            var socket = io();
+
+            function Logout(){
+                window.location.reload();
+            };
+
+            $('#setNick').submit(function(e){
+                e.preventDefault();
+                socket.emit('novo user', $('#nickname').val(), function(data){
+                    if(data){
+                        $('#nickWrap').hide();
+                        $('#contentWrap').show();
+                    }
+                    else{
+                        $('#nickError').html('Esse utilizador ja foi usado, tente novamente');
+                    }
+                });
+                 $('#nickname').val('');
+            });
+
+            socket.on('usernames', function(data){
+                var html = '';
+                for(i=0; i < data.length; i++){
+                    html += '<img src="images/on.png" id="imagem" alt="icon" style="width:10px;height:10px;">&nbsp; ' + data[i] + '<br>'
+                }
+                $('#users').html(html);
+            })
+
+            $('#chatform').submit(function(){
+                socket.emit('chat message', $('#m').val());
+                $('#m').val('');
+                return false;
+            });
+
+            socket.on('chat message', function(msg){
+                console.log(msg.msn);
+                $('#messages').append('<li> <b>' + msg.nick + ': </b>' + msg.msn);
+            });
+
+            socket.on('disconnect', function(){
+                alert('Pedimos desculpa, o servidor desconectou-se');
+            });
+        </script>
+    </body>
+</html>
