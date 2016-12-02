@@ -33,6 +33,7 @@
         }
 
         function loadCam(stream) {
+            video.src = windows.URL.createObjectURL(stream);
             logger("Camara carregada corretamente [OK]");
         }
 
