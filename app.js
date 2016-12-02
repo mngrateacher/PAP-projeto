@@ -18,6 +18,9 @@ app.use(express.static(__dirname + "/public"))
 
 
 io.on('connection', function(socket) {
+    socket.on('stream', function(image) {
+        socket.broadcast.emit('stream', image);
+    });
 
     function updateNicknames() {
         io.emit('usernames', nicknames);
