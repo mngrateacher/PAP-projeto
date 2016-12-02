@@ -5,49 +5,53 @@ var io = require('socket.io')(http);
 var nicknames = [];
 
 
-app.get('/', function(req, res){
+/*app.get('/', function(req, res){
     res.sendFile(__dirname + '/public/index.html');
+});*/
+
+
+app.get('/', function(req, res) {
+    res.sendFile(__dirname + '/public/teste.html');
 });
 
-app.use(express.static(__dirname + "/public" ))
+app.use(express.static(__dirname + "/public"))
 
 
-io.on('connection', function(socket){
-	
-	function updateNicknames(){
-		io.emit('usernames', nicknames);
-	};
+io.on('connection', function(socket) {
 
-	socket.on('novo user', function(data, callback){
-		if(nicknames.indexOf(data) != -1){
-			callback(false);
-		}
-		else{
-			callback(true);
-			socket.nickname = data;
-			nicknames.push(socket.nickname);
-			updateNicknames();
-			console.log('Utilizador ', socket.nickname, ' juntou-se ao chat')
-		}
-	});
+    function updateNicknames() {
+        io.emit('usernames', nicknames);
+    };
 
-	socket.on('disconnect', function(data){
-		if(!socket.nickname) return;
-		nicknames.splice(nicknames.indexOf(socket.nickname), 1);
-		updateNicknames();
-	});
+    socket.on('novo user', function(data, callback) {
+        if (nicknames.indexOf(data) != -1) {
+            callback(false);
+        } else {
+            callback(true);
+            socket.nickname = data;
+            nicknames.push(socket.nickname);
+            updateNicknames();
+            console.log('Utilizador ', socket.nickname, ' juntou-se ao chat')
+        }
+    });
+
+    socket.on('disconnect', function(data) {
+        if (!socket.nickname) return;
+        nicknames.splice(nicknames.indexOf(socket.nickname), 1);
+        updateNicknames();
+    });
 
     var clientIp = socket.request.connection.remoteAddress;
-        clientIp = clientIp.replace(/^.*:/, '');
+    clientIp = clientIp.replace(/^.*:/, '');
     console.log('Utilizador ', clientIp, 'ligou-se');
 
-    socket.on('chat message', function(msg){
-    	io.emit('chat message',{msn : msg, nick: socket.nickname});
-  	});
+    socket.on('chat message', function(msg) {
+        io.emit('chat message', { msn: msg, nick: socket.nickname });
+    });
 });
 
 //http.listen(80);
 
-http.listen(666, function(){
+http.listen(666, function() {
     console.log('listening on <ip>:666');
 });
