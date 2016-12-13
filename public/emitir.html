@@ -5,13 +5,14 @@
     <meta charset="UTF-8">
     <title>Emitir</title>
     <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
-    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
 </head>
 
 <body>
     <video src="" id="video" style="width:680px;height:320px;" autoplay="true"></video>
 
-    <canvas style="display: none;" id="preview"></canvas>
+    <canvas id="preview"></canvas>
+
     <div id="logger"></div>
 
     <script type="text/javascript">
@@ -33,7 +34,7 @@
         }
 
         function loadCam(stream) {
-            video.src = window.URL.createObjectURL(stream);
+             video.src = window.URL.createObjectURL(stream);
             logger("Camara carregada corretamente [OK]");
         }
 
@@ -50,14 +51,12 @@
             navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msgGetUserMedia);
 
             if (navigator.getUserMedia) {
-                navigator.getUserMedia({
-                    video: true
-                }, loadCam, loadFail);
+                navigator.getUserMedia({video: true}, loadCam, loadFail);
             }
 
             setInterval(function() {
                 viewVideo(video, context);
-            }, 70);
+            }, 1);
         })
     </script>
 </body>

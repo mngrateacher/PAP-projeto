@@ -1,8 +1,19 @@
+var fs = require("fs");
 var express = require('express');
 var app = new express();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
+//var http = require('http').Server(app);
+var https = require('https').Server({key : fs.readFileSync('key.pem'), cert : fs.readFileSync('cert.pem')}, app)
+var io = require('socket.io')(https);
+
 var nicknames = [];
+
+var Log = require('log'),
+    log = new Log('debug');
+
+https.listen(666, function() {
+    log.info('Server listening on port 666');
+    //console.log('listening on <ip>:666');
+});
 
 
 /*app.get('/', function(req, res){
@@ -19,7 +30,7 @@ app.use(express.static(__dirname + "/public"))
 
 io.on('connection', function(socket) {
     socket.on('stream', function(image) {
-        socket.broadcast.emit('stream', image);
+        io.emit('stream', image);
     });
 
     function updateNicknames() {
@@ -54,7 +65,3 @@ io.on('connection', function(socket) {
 });
 
 //http.listen(80);
-
-http.listen(666, function() {
-    console.log('listening on <ip>:666');
-});
