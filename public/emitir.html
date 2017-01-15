@@ -11,7 +11,7 @@
 <body>
     <video src="" id="video" style="width:680px;height:320px;" autoplay="true"></video>
 
-    <canvas id="preview"></canvas>
+    <canvas id="preview" hidden></canvas>
 
     <div id="logger"></div>
 
@@ -35,7 +35,6 @@
 
         function loadCam(stream) {
              video.src = window.URL.createObjectURL(stream);
-            logger("Camara carregada corretamente [OK]");
         }
 
         function loadFail() {
